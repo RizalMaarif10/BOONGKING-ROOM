@@ -159,12 +159,17 @@
     <div class="auth-card mx-3">
         {{-- Header --}}
         <div class="auth-header">
-            <div class="auth-icon">
-                <i class="bi bi-building-fill text-white" style="font-size:1.4rem;"></i>
+            <div class="auth-icon" style="background:transparent;border:none;">
+                @if (file_exists(public_path('images/logo.png')))
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo"
+                        style="width:52px;height:52px;object-fit:contain;">
+                @else
+                    <i class="bi bi-building-fill text-white" style="font-size:1.4rem;"></i>
+                @endif
             </div>
-            <h5 style="color:white;font-weight:800;margin:0;font-size:1.2rem;position:relative;z-index:1;">BookRoom</h5>
+            <h5 style="color:white;font-weight:800;margin:0;font-size:1.2rem;position:relative;z-index:1;">SMK NEGERI 6 PURWOREJO</h5>
             <p style="color:rgba(255,255,255,0.5);font-size:0.78rem;margin:4px 0 0;position:relative;z-index:1;">Sistem
-                Booking Ruangan Kampus</p>
+                Booking Ruangan</p>
         </div>
 
         {{-- Body --}}

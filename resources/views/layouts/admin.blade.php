@@ -38,17 +38,25 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            text-decoration: none;
         }
 
         .sidebar-brand-icon {
             width: 38px;
             height: 38px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            background: transparent;
+        }
+
+        .sidebar-brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .sidebar-brand-text {
@@ -227,21 +235,6 @@
             border-bottom: none;
         }
 
-        /* ── BUTTONS ── */
-        .btn-action-edit {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 8px;
-        }
-
-        .btn-action-delete {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 8px;
-        }
-
         /* scrollbar */
         ::-webkit-scrollbar {
             width: 5px;
@@ -262,32 +255,44 @@
 
     {{-- ── SIDEBAR ── --}}
     <aside class="sidebar">
+
+        {{-- Brand --}}
         <div class="sidebar-brand">
             <div class="sidebar-brand-icon">
-                <i class="bi bi-building-fill text-white" style="font-size:1.1rem;"></i>
+                @if (file_exists(public_path('images/logo.png')))
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo">
+                @else
+                    <i class="bi bi-building-fill text-white" style="font-size:1rem;"></i>
+                @endif
             </div>
             <div>
-                <div class="sidebar-brand-text">BookRoom</div>
+                <div class="sidebar-brand-text">SMK NEGERI 6 PURWOREJO</div>
                 <div class="sidebar-brand-sub">Admin Panel</div>
             </div>
         </div>
 
+        {{-- Menu --}}
         <div class="sidebar-section">Menu Utama</div>
         <nav>
-            <a href="/admin/dashboard" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2-fill"></i> Dashboard
             </a>
-            <a href="/admin/rooms" class="{{ request()->is('admin/rooms*') ? 'active' : '' }}">
+            <a href="{{ route('admin.rooms.index') }}" class="{{ request()->is('admin/rooms*') ? 'active' : '' }}">
                 <i class="bi bi-building"></i> Ruangan
             </a>
-            <a href="/admin/bookings" class="{{ request()->is('admin/bookings*') ? 'active' : '' }}">
+            <a href="{{ route('admin.jenis-ruangan.index') }}"
+                class="{{ request()->is('admin/jenis-ruangan*') ? 'active' : '' }}">
+                <i class="bi bi-tags"></i> Jenis Ruangan
+            </a>
+            <a href="{{ route('admin.bookings') }}" class="{{ request()->is('admin/bookings*') ? 'active' : '' }}">
                 <i class="bi bi-calendar2-check"></i> Booking
             </a>
-            <a href="/admin/users" class="{{ request()->is('admin/users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="{{ request()->is('admin/users*') ? 'active' : '' }}">
                 <i class="bi bi-people-fill"></i> Users
             </a>
         </nav>
 
+        {{-- Footer --}}
         <div class="sidebar-footer">
             <div class="d-flex align-items-center gap-2 mb-3 px-1">
                 <div
@@ -297,10 +302,12 @@
                 <div style="min-width:0;">
                     <div
                         style="color:white;font-size:0.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        {{ auth()->user()->name ?? 'Admin' }}</div>
+                        {{ auth()->user()->name ?? 'Admin' }}
+                    </div>
                     <div
                         style="color:rgba(255,255,255,0.35);font-size:0.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        {{ auth()->user()->email ?? '' }}</div>
+                        {{ auth()->user()->email ?? '' }}
+                    </div>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}">

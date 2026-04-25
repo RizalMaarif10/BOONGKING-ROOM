@@ -66,6 +66,9 @@
             padding: 6px 12px;
             border-radius: 8px;
             transition: all 0.2s;
+            border: none;
+            background: transparent;
+            cursor: pointer;
         }
 
         .user-nav-link:hover {
@@ -171,34 +174,66 @@
 <body>
 
     {{-- ── NAVBAR ── --}}
+    @php
+        $currentPath = request()->path();
+        $isDashboard = $currentPath === 'rooms';
+        $isBooking = $currentPath === 'booking/create';
+        $isRiwayat = $currentPath === 'booking';
+        $isJadwal = str_starts_with($currentPath, 'schedule');
+    @endphp
+
     <nav class="user-navbar">
-        <a href="/dashboard" class="user-navbar-brand">
-            <div class="user-navbar-brand-icon">
-                <i class="bi bi-building-fill text-white" style="font-size:0.9rem;"></i>
-            </div>
-            <span class="user-navbar-brand-text">BookRoom</span>
+        {{-- Brand --}}
+        <a href="{{ route('rooms') }}" class="user-navbar-brand">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo Kampus"
+                style="height:36px;width:auto;border-radius:6px;">
+            <span class="user-navbar-brand-text">SMK NEGERI 6 PURWOREJO</span>
         </a>
+
+        {{-- Nav Links --}}
         <div class="d-flex align-items-center gap-1">
-            <a href="/dashboard" class="user-nav-link {{ request()->is('dashboard') ? 'active' : '' }}"><i
-                    class="bi bi-grid-1x2"></i> <span class="d-none d-md-inline">Dashboard</span></a>
-            <a href="/booking" class="user-nav-link {{ request()->is('booking*') ? 'active' : '' }}"><i
-                    class="bi bi-calendar2-plus"></i> <span class="d-none d-md-inline">Booking</span></a>
-            <a href="/schedule" class="user-nav-link {{ request()->is('booking/riwayat*') ? 'active' : '' }}"><i
-                    class="bi bi-clock-history"></i> <span class="d-none d-md-inline">Riwayat</span></a>
+
+            {{-- Dashboard --}}
+            <a href="{{ route('rooms') }}" class="user-nav-link {{ $isDashboard ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2"></i>
+                <span class="d-none d-md-inline">Dashboard</span>
+            </a>
+
+            {{-- Booking --}}
+            <a href="{{ route('booking.create') }}" class="user-nav-link {{ $isBooking ? 'active' : '' }}">
+                <i class="bi bi-calendar2-plus"></i>
+                <span class="d-none d-md-inline">Booking</span>
+            </a>
+
+            {{-- Riwayat --}}
+            <a href="{{ route('booking.index') }}" class="user-nav-link {{ $isRiwayat ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i>
+                <span class="d-none d-md-inline">Riwayat</span>
+            </a>
+
+            {{-- Jadwal --}}
+            <a href="{{ route('schedule') }}" class="user-nav-link {{ $isJadwal ? 'active' : '' }}">
+                <i class="bi bi-calendar3"></i>
+                <span class="d-none d-md-inline">Jadwal</span>
+            </a>
+
         </div>
+
+        {{-- User Info + Logout --}}
         <div class="d-flex align-items-center gap-3">
             <div class="d-none d-md-flex align-items-center gap-2">
                 <div
                     style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.75rem;">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
-                <span
-                    style="color:rgba(255,255,255,0.75);font-size:0.82rem;font-weight:600;">{{ auth()->user()->name ?? 'User' }}</span>
+                <span style="color:rgba(255,255,255,0.75);font-size:0.82rem;font-weight:600;">
+                    {{ auth()->user()->name ?? 'User' }}
+                </span>
             </div>
             <form method="POST" action="{{ route('logout') }}" class="m-0">
                 @csrf
                 <button type="submit" class="user-nav-link"
-                    style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:8px;cursor:pointer;">
+                    style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);">
                     <i class="bi bi-box-arrow-right"></i>
                 </button>
             </form>

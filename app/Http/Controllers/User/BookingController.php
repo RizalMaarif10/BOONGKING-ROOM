@@ -10,10 +10,8 @@ use App\Models\Room;
 
 class BookingController extends Controller
 {
-
     public function index()
     {
-        // 1. Logika untuk Riwayat Booking (Sudah ada)
         $allBookings = Booking::with('room')
             ->where('user_id', Auth::id())
             ->latest()
@@ -26,9 +24,8 @@ class BookingController extends Controller
             ->latest()
             ->get();
 
-        // 2. TAMBAHKAN INI: Logika untuk Daftar Ruangan (Agar variabel $rooms tersedia)
         $jenisFilter = request('jenis', 'all');
-        $roomsQuery = Room::with('jenisRuangan');
+        $roomsQuery  = Room::with('jenisRuangan');
 
         if ($jenisFilter !== 'all') {
             $roomsQuery->where('jenis_ruangan_id', $jenisFilter);
@@ -36,10 +33,8 @@ class BookingController extends Controller
 
         $rooms = $roomsQuery->get();
 
-        // 3. Masukkan 'rooms' ke dalam compact
         return view('user.bookings.index', compact('bookings', 'allBookings', 'rooms'));
     }
-
 
     public function create()
     {
@@ -47,86 +42,53 @@ class BookingController extends Controller
         return view('user.bookings.create', compact('rooms'));
     }
 
-
     public function store(Request $request)
     {
-
-        /*
-        VALIDASI FORM
-        */
-
         $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'tanggal' => 'required|date',
-            'jam_mulai' => 'required',
+            'room_id'    => 'required|exists:rooms,id',
+            'tanggal'    => 'required|date',
+            'jam_mulai'  => 'required',
             'jam_selesai' => 'required',
-            'keperluan' => 'required|string|max:255'
+            'keperluan'  => 'required|string|max:255'
         ]);
 
-
-        /*
-        VALIDASI JAM
-        */
-
         if ($request->jam_mulai >= $request->jam_selesai) {
-
             return back()
                 ->withInput()
                 ->with('error', 'Jam selesai harus lebih besar dari jam mulai');
         }
 
-
-        /*
-        CEK BENTROK JADWAL
-        */
-
         $conflict = Booking::where('room_id', $request->room_id)
             ->where('tanggal', $request->tanggal)
-
             ->where(function ($query) use ($request) {
-
                 $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
-
                     ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
-
                     ->orWhere(function ($q) use ($request) {
-
                         $q->where('jam_mulai', '<', $request->jam_selesai)
                             ->where('jam_selesai', '>', $request->jam_mulai);
                     });
             })
-
             ->whereIn('status', ['approved', 'pending'])
-
             ->exists();
 
-
         if ($conflict) {
-
             return back()
                 ->withInput()
                 ->with('error', 'Jadwal ruangan sudah dipakai pada waktu tersebut');
         }
 
-
-        /*
-        SIMPAN BOOKING
-        */
-
         Booking::create([
-
-            'user_id' => Auth::id(),
-            'room_id' => $request->room_id,
-            'tanggal' => $request->tanggal,
-            'jam_mulai' => $request->jam_mulai,
+            'user_id'    => Auth::id(),
+            'room_id'    => $request->room_id,
+            'tanggal'    => $request->tanggal,
+            'jam_mulai'  => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
-            'keperluan' => $request->keperluan,
-            'status' => 'pending'
-
+            'keperluan'  => $request->keperluan,
+            'status'     => 'pending'
         ]);
 
-
-        return redirect('/booking')
+        // Redirect ke create agar toast muncul di halaman yang sama
+        return redirect()->route('booking.create')
             ->with('success', 'Booking berhasil diajukan, menunggu persetujuan admin');
     }
 
@@ -145,7 +107,6 @@ class BookingController extends Controller
             ->get(['jam_mulai', 'jam_selesai']);
 
         $slots = [];
-
         foreach ($bookings as $b) {
             $slots[] = [
                 'start' => $b->jam_mulai,
@@ -156,51 +117,30 @@ class BookingController extends Controller
         return response()->json($slots);
     }
 
-    /*
-    HALAMAN KALENDER
-    */
-
     public function schedule()
     {
         return view('user.schedule.index');
     }
 
-
-
-    /*
-    DATA KALENDER (JSON)
-    */
-
     public function scheduleData()
     {
-
         $bookings = Booking::with(['room', 'user'])
             ->where('status', 'approved')
             ->get();
 
         $events = [];
-
         foreach ($bookings as $booking) {
-
             $events[] = [
-
                 'title' => $booking->room->nama_ruangan,
-
                 'start' => $booking->tanggal . ' ' . $booking->jam_mulai,
-
-                'end' => $booking->tanggal . ' ' . $booking->jam_selesai,
-
+                'end'   => $booking->tanggal . ' ' . $booking->jam_selesai,
                 'color' => '#0d6efd',
-
                 'extendedProps' => [
-
-                    'ruangan' => $booking->room->nama_ruangan,
-                    'user' => $booking->user->name,
+                    'ruangan'  => $booking->room->nama_ruangan,
+                    'user'     => $booking->user->name,
                     'keperluan' => $booking->keperluan,
-                    'jam' => $booking->jam_mulai . ' - ' . $booking->jam_selesai
-
+                    'jam'      => $booking->jam_mulai . ' - ' . $booking->jam_selesai
                 ]
-
             ];
         }
 

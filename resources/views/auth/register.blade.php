@@ -176,8 +176,13 @@
     <div class="auth-card mx-3">
         {{-- Header --}}
         <div class="auth-header">
-            <div class="auth-icon">
-                <i class="bi bi-person-plus-fill text-white" style="font-size:1.3rem;"></i>
+            <div class="auth-icon" style="background:transparent;border:none;">
+                @if (file_exists(public_path('images/logo.png')))
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo"
+                        style="width:52px;height:52px;object-fit:contain;">
+                @else
+                    <i class="bi bi-person-plus-fill text-white" style="font-size:1.3rem;"></i>
+                @endif
             </div>
             <h5 style="color:white;font-weight:800;margin:0;font-size:1.15rem;position:relative;z-index:1;">Buat Akun
             </h5>
