@@ -5,36 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') — Booking Ruangan</title>
+     {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        body {
-            background: #f1f5f9;
-        }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f1f5f9; }
 
         /* ── SIDEBAR ── */
         .sidebar {
             width: 250px;
             height: 100vh;
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
             display: flex;
             flex-direction: column;
-            z-index: 100;
+            z-index: 200;
             overflow-y: auto;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-brand {
             padding: 22px 20px 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -42,82 +40,84 @@
         }
 
         .sidebar-brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            overflow: hidden;
+            width: 38px; height: 38px;
+            border-radius: 10px; overflow: hidden;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             background: transparent;
         }
 
-        .sidebar-brand-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .sidebar-brand-icon img { width: 100%; height: 100%; object-fit: contain; }
 
-        .sidebar-brand-text {
-            color: white;
-            font-weight: 700;
-            font-size: 0.92rem;
-            line-height: 1.2;
-        }
-
-        .sidebar-brand-sub {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
+        .sidebar-brand-text { color: white; font-weight: 700; font-size: 0.92rem; line-height: 1.2; }
+        .sidebar-brand-sub { color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 500; }
 
         .sidebar-section {
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.62rem; font-weight: 700;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
             padding: 16px 20px 6px;
         }
 
         .sidebar nav a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            margin: 2px 10px;
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; margin: 2px 10px;
             border-radius: 10px;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255,255,255,0.6);
             text-decoration: none;
-            font-size: 0.87rem;
-            font-weight: 500;
+            font-size: 0.87rem; font-weight: 500;
             transition: all 0.2s;
         }
 
-        .sidebar nav a i {
-            font-size: 1rem;
-        }
-
-        .sidebar nav a:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-        }
-
-        .sidebar nav a.active {
-            background: rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-            font-weight: 700;
-        }
-
-        .sidebar nav a.active i {
-            color: #3b82f6;
-        }
+        .sidebar nav a i { font-size: 1rem; }
+        .sidebar nav a:hover { background: rgba(255,255,255,0.08); color: white; }
+        .sidebar nav a.active { background: rgba(59,130,246,0.2); color: #93c5fd; font-weight: 700; }
+        .sidebar nav a.active i { color: #3b82f6; }
 
         .sidebar-footer {
             margin-top: auto;
             padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* ── OVERLAY ── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 199;
+        }
+
+        .sidebar-overlay.show { display: block; }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0; z-index: 90;
+        }
+
+        .topbar-title { font-weight: 700; color: #0f172a; font-size: 0.97rem; }
+        .topbar-sub { color: #94a3b8; font-size: 0.76rem; }
+
+        /* ── HAMBURGER ── */
+        .btn-hamburger {
+            display: none;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            width: 38px; height: 38px;
+            align-items: center; justify-content: center;
+            cursor: pointer;
+            color: #0f172a;
+            font-size: 1.1rem;
+            flex-shrink: 0;
         }
 
         /* ── MAIN ── */
@@ -128,133 +128,75 @@
             flex-direction: column;
         }
 
-        .topbar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 14px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 90;
-        }
-
-        .topbar-title {
-            font-weight: 700;
-            color: #0f172a;
-            font-size: 0.97rem;
-        }
-
-        .topbar-sub {
-            color: #94a3b8;
-            font-size: 0.76rem;
-        }
-
-        .page-body {
-            padding: 24px 28px;
-            flex: 1;
-        }
+        .page-body { padding: 24px 28px; flex: 1; }
 
         /* ── CARDS ── */
-        .card {
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 16px !important;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
-        }
-
-        .card-header {
-            background: white !important;
-            border-bottom: 1px solid #f1f5f9 !important;
-            border-radius: 16px 16px 0 0 !important;
-            padding: 16px 20px !important;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #0f172a;
-        }
+        .card { border: 1px solid #e2e8f0 !important; border-radius: 16px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important; }
+        .card-header { background: white !important; border-bottom: 1px solid #f1f5f9 !important; border-radius: 16px 16px 0 0 !important; padding: 16px 20px !important; font-weight: 700; font-size: 0.9rem; color: #0f172a; }
 
         /* ── STATUS BADGES ── */
-        .badge-pending {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fde68a;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-        }
-
-        .badge-approved {
-            background: #dcfce7;
-            color: #15803d;
-            border: 1px solid #bbf7d0;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-        }
-
-        .badge-rejected {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-        }
+        .badge-pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; }
+        .badge-approved { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; font-weight: 700; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; }
 
         /* ── TABLE ── */
-        .table {
-            font-size: 0.87rem;
-        }
+        .table { font-size: 0.87rem; }
+        .table thead th { background: #f8fafc; color: #64748b; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e2e8f0 !important; padding: 12px 16px; }
+        .table tbody td { padding: 13px 16px; vertical-align: middle; color: #334155; border-bottom: 1px solid #f1f5f9; }
+        .table tbody tr:hover td { background: #f8fafc; }
+        .table tbody tr:last-child td { border-bottom: none; }
 
-        .table thead th {
-            background: #f8fafc;
-            color: #64748b;
-            font-weight: 700;
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            border-bottom: 1px solid #e2e8f0 !important;
-            padding: 12px 16px;
-        }
-
-        .table tbody td {
-            padding: 13px 16px;
-            vertical-align: middle;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .table tbody tr:hover td {
-            background: #f8fafc;
-        }
-
-        .table tbody tr:last-child td {
-            border-bottom: none;
-        }
+        /* ── FOOTER ── */
+        .admin-footer { background: white; border-top: 1px solid #e2e8f0; color: #94a3b8; text-align: center; font-size: 0.73rem; font-weight: 500; padding: 12px 28px; }
+        .admin-footer span { color: #64748b; font-weight: 600; }
 
         /* scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
 
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 99px;
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .btn-hamburger {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 12px 16px;
+                gap: 12px;
+            }
+
+            .page-body {
+                padding: 16px;
+            }
+
+            .admin-footer {
+                padding: 12px 16px;
+                font-size: 0.68rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    {{-- ── OVERLAY ── --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     {{-- ── SIDEBAR ── --}}
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
 
         {{-- Brand --}}
         <div class="sidebar-brand">
@@ -274,38 +216,34 @@
         {{-- Menu --}}
         <div class="sidebar-section">Menu Utama</div>
         <nav>
-            <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}" onclick="closeSidebar()">
                 <i class="bi bi-grid-1x2-fill"></i> Dashboard
             </a>
-            <a href="{{ route('admin.rooms.index') }}" class="{{ request()->is('admin/rooms*') ? 'active' : '' }}">
+            <a href="{{ route('admin.rooms.index') }}" class="{{ request()->is('admin/rooms*') ? 'active' : '' }}" onclick="closeSidebar()">
                 <i class="bi bi-building"></i> Ruangan
             </a>
-            <a href="{{ route('admin.jenis-ruangan.index') }}"
-                class="{{ request()->is('admin/jenis-ruangan*') ? 'active' : '' }}">
+            <a href="{{ route('admin.jenis-ruangan.index') }}" class="{{ request()->is('admin/jenis-ruangan*') ? 'active' : '' }}" onclick="closeSidebar()">
                 <i class="bi bi-tags"></i> Jenis Ruangan
             </a>
-            <a href="{{ route('admin.bookings') }}" class="{{ request()->is('admin/bookings*') ? 'active' : '' }}">
+            <a href="{{ route('admin.bookings') }}" class="{{ request()->is('admin/bookings*') ? 'active' : '' }}" onclick="closeSidebar()">
                 <i class="bi bi-calendar2-check"></i> Booking
             </a>
-            <a href="{{ route('admin.users.index') }}" class="{{ request()->is('admin/users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="{{ request()->is('admin/users*') ? 'active' : '' }}" onclick="closeSidebar()">
                 <i class="bi bi-people-fill"></i> Users
             </a>
         </nav>
 
-        {{-- Footer --}}
+        {{-- Sidebar Footer --}}
         <div class="sidebar-footer">
             <div class="d-flex align-items-center gap-2 mb-3 px-1">
-                <div
-                    style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <i class="bi bi-person-fill text-white" style="font-size:0.9rem;"></i>
                 </div>
                 <div style="min-width:0;">
-                    <div
-                        style="color:white;font-size:0.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    <div style="color:white;font-size:0.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                         {{ auth()->user()->name ?? 'Admin' }}
                     </div>
-                    <div
-                        style="color:rgba(255,255,255,0.35);font-size:0.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    <div style="color:rgba(255,255,255,0.35);font-size:0.68rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                         {{ auth()->user()->email ?? '' }}
                     </div>
                 </div>
@@ -323,10 +261,16 @@
     {{-- ── MAIN ── --}}
     <div class="main-content">
         <div class="topbar">
-            <div>
+            {{-- Hamburger (mobile only) --}}
+            <button class="btn-hamburger" onclick="openSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div style="flex:1;">
                 <div class="topbar-title">@yield('page_title', 'Dashboard')</div>
                 <div class="topbar-sub">@yield('page_subtitle', 'Selamat datang di panel administrator')</div>
             </div>
+
             <div class="d-flex align-items-center gap-2">
                 <span class="d-none d-md-flex align-items-center gap-2 px-3 py-2 rounded-3"
                     style="background:#f8fafc;border:1px solid #e2e8f0;font-size:0.78rem;color:#64748b;">
@@ -339,9 +283,27 @@
         <div class="page-body">
             @yield('content')
         </div>
+
+        {{-- ── FOOTER ── --}}
+        <footer class="admin-footer">
+            &copy; {{ date('Y') }} <span>SMK Negeri 6 Purworejo</span> &mdash; Sistem Booking Ruangan. All rights reserved.
+        </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    </script>
 </body>
 
 </html>

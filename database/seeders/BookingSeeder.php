@@ -32,3 +32,4 @@ class BookingSeeder extends Seeder
         ]);
     }
 }
+
